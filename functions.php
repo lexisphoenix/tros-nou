@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TROS_NOU_VERSION', '1.1.1' );
+define( 'TROS_NOU_VERSION', '1.1.4' );
 define( 'TROS_NOU_DIR', get_template_directory() );
 define( 'TROS_NOU_URI', get_template_directory_uri() );
 
@@ -176,7 +176,7 @@ function tros_nou_get_hero_video_url() {
 		return esc_url( $custom );
 	}
 
-	return TROS_NOU_URI . '/assets/video/casa-entrada-liked.mp4';
+	return TROS_NOU_URI . '/assets/video/casa-entrada-cerrada.mp4';
 }
 
 /**
