@@ -3,12 +3,15 @@
 :root {
 	--tn-black: #000000;
 	--tn-white: #ffffff;
+	--tn-paper: #f8faf4;
 	--tn-gray: #8a8a8a;
 	--tn-font: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	--tn-ease: cubic-bezier(0.4, 0, 0.2, 1);
 	--tn-hero-scroll: 200vh;
 	--tn-brand-size: clamp(3.25rem, 11vw, 5rem);
 	--tn-brand-offset: clamp(0.85rem, 3vw, 1.5rem);
+	--tn-hero-pad-x: clamp(0.25rem, 1.25vw, 0.65rem);
+	--tn-hero-pad-y: clamp(0.35rem, 1.5vh, 0.85rem);
 }
 
 *,
@@ -24,8 +27,8 @@ html {
 body {
 	margin: 0;
 	font-family: var(--tn-font);
-	background: var(--tn-black);
-	color: var(--tn-white);
+	background: var(--tn-paper);
+	color: var(--tn-black);
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
@@ -93,6 +96,7 @@ body.tn-entered {
 .tn-hero {
 	position: relative;
 	height: var(--tn-hero-scroll);
+	overflow: hidden;
 }
 
 .tn-hero__sticky {
@@ -100,7 +104,7 @@ body.tn-entered {
 	top: 0;
 	height: 100vh;
 	overflow: hidden;
-	background: var(--tn-black);
+	background: var(--tn-paper);
 	cursor: pointer;
 }
 
@@ -114,14 +118,19 @@ body.tn-entered .tn-hero__sticky {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: var(--tn-black);
+	padding: var(--tn-hero-pad-y) var(--tn-hero-pad-x);
+	padding-top: calc(var(--tn-hero-pad-y) + var(--tn-brand-size) * 0.05);
+	background: var(--tn-paper);
 }
 
 .tn-hero__image,
 .tn-hero__video {
+	display: block;
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
 	object-position: center;
 	opacity: 1;
 	transition: opacity 0.45s var(--tn-ease);
@@ -212,8 +221,8 @@ body.tn-entered .tn-hero__sticky {
 	font-size: 0.68rem;
 	letter-spacing: 0.22em;
 	text-transform: uppercase;
-	color: var(--tn-white);
-	opacity: 0.5;
+	color: var(--tn-black);
+	opacity: 0.42;
 	transition: opacity 0.4s var(--tn-ease);
 	pointer-events: none;
 	z-index: 5;
@@ -275,6 +284,8 @@ body.tn-entered .tn-hero__hint {
 @media (max-width: 767px) {
 	:root {
 		--tn-hero-scroll: 185vh;
+		--tn-hero-pad-x: clamp(0.2rem, 1.5vw, 0.5rem);
+		--tn-hero-pad-y: clamp(0.3rem, 1.25vh, 0.75rem);
 	}
 }
 
