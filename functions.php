@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TROS_NOU_VERSION', '1.1.9' );
+define( 'TROS_NOU_VERSION', '1.1.14' );
 define( 'TROS_NOU_DIR', get_template_directory() );
 define( 'TROS_NOU_URI', get_template_directory_uri() );
 

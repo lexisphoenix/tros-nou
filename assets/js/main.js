@@ -1,8 +1,8 @@
 (function () {
 	'use strict';
 
-	var FADE_START = 0.08;
-	var FADE_END = 0.72;
+	var ANIMATION_MS = 1000;
+	var CONTACT_REVEAL = 0.92;
 
 	var hero = document.getElementById('tn-hero');
 	if (!hero) {
@@ -18,44 +18,61 @@
 	var heroSticky = hero.querySelector('.tn-hero__sticky');
 	var media = hero.querySelector('.tn-hero__image, .tn-hero__video');
 
+	var scrollAnimating = false;
 	var ticking = false;
 
 	function clamp(value, min, max) {
 		return Math.min(Math.max(value, min), max);
 	}
 
+	function easeInOutCubic(t) {
+		return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+	}
+
+	function getScrollTarget() {
+		return Math.max(hero.offsetHeight - window.innerHeight, 0);
+	}
+
 	function getScrollProgress() {
-		var scrollable = hero.offsetHeight - window.innerHeight;
+		var scrollable = getScrollTarget();
 
 		if (scrollable <= 0) {
 			return 0;
 		}
 
-		var rect = hero.getBoundingClientRect();
-		var scrolled = -rect.top;
-		return clamp(scrolled / scrollable, 0, 1);
+		return clamp((window.scrollY || window.pageYOffset) / scrollable, 0, 1);
 	}
 
-	function getFadeProgress(progress) {
-		return clamp((progress - FADE_START) / (FADE_END - FADE_START), 0, 1);
+	function clampScrollPosition() {
+		var max = getScrollTarget();
+		var y = window.scrollY || window.pageYOffset;
+
+		if (y > max) {
+			window.scrollTo(0, max);
+		}
 	}
 
-	function applyProgress(progress) {
+	function applyCurtain(progress) {
 		if (!veil || !overlayContact) {
 			return;
 		}
 
-		var fadeProgress = getFadeProgress(progress);
+		var p = easeInOutCubic(clamp(progress, 0, 1));
+		var curtainTop = (1 - p) * 100;
 
-		veil.style.opacity = String(fadeProgress);
+		veil.style.clipPath = 'inset(' + curtainTop + '% 0 0 0)';
+		veil.style.webkitMaskImage = 'none';
+		veil.style.maskImage = 'none';
 
 		if (media) {
-			media.style.opacity = String(1 - fadeProgress * 0.88);
+			media.style.opacity = String(1 - p * 0.35);
 		}
 
-		overlayContact.style.opacity = String(clamp((fadeProgress - 0.18) / 0.55, 0, 1));
+		var contactOpacity = clamp((p - CONTACT_REVEAL) / (1 - CONTACT_REVEAL), 0, 1);
 
-		if (fadeProgress > 0.42) {
+		overlayContact.style.opacity = String(contactOpacity);
+
+		if (p >= CONTACT_REVEAL) {
 			overlayContact.classList.add('is-visible');
 			overlayContact.setAttribute('aria-hidden', 'false');
 		} else {
@@ -64,7 +81,7 @@
 		}
 
 		if (closeBtn) {
-			if (fadeProgress > 0.45) {
+			if (p > 0.55) {
 				closeBtn.classList.add('is-visible');
 				closeBtn.removeAttribute('hidden');
 			} else {
@@ -74,7 +91,7 @@
 		}
 
 		if (hint) {
-			if (progress > 0.04) {
+			if (progress > 0.02) {
 				hint.classList.add('is-hidden');
 			} else {
 				hint.classList.remove('is-hidden');
@@ -82,13 +99,13 @@
 		}
 
 		if (brand) {
-			brand.style.opacity = String(1 - fadeProgress);
-			brand.style.pointerEvents = fadeProgress > 0.85 ? 'none' : 'auto';
+			brand.style.opacity = String(1 - clamp(p / 0.45, 0, 1));
+			brand.style.pointerEvents = p > 0.35 ? 'none' : 'auto';
 		}
 
-		if (fadeProgress >= 0.92) {
+		if (p >= 0.98) {
 			document.body.classList.add('tn-entered');
-		} else if (fadeProgress < 0.75) {
+		} else {
 			document.body.classList.remove('tn-entered');
 		}
 	}
@@ -96,43 +113,63 @@
 	function onScroll() {
 		if (!ticking) {
 			window.requestAnimationFrame(function () {
-				applyProgress(getScrollProgress());
+				if (!scrollAnimating) {
+					clampScrollPosition();
+					applyCurtain(getScrollProgress());
+				}
 				ticking = false;
 			});
 			ticking = true;
 		}
 	}
 
-	function getScrollTarget() {
-		return hero.offsetHeight - window.innerHeight;
+	function animateScrollTo(targetY, duration) {
+		var startY = window.scrollY || window.pageYOffset;
+		var distance = targetY - startY;
+		var startTime = performance.now();
+
+		if (Math.abs(distance) < 1) {
+			return;
+		}
+
+		scrollAnimating = true;
+
+		function frame(now) {
+			var elapsed = now - startTime;
+			var t = clamp(elapsed / duration, 0, 1);
+			var eased = easeInOutCubic(t);
+			var y = startY + distance * eased;
+
+			window.scrollTo(0, y);
+			applyCurtain(getScrollProgress());
+
+			if (t < 1) {
+				window.requestAnimationFrame(frame);
+			} else {
+				scrollAnimating = false;
+				clampScrollPosition();
+				applyCurtain(getScrollProgress());
+			}
+		}
+
+		window.requestAnimationFrame(frame);
 	}
 
 	function goToContact() {
 		var scrollable = getScrollTarget();
 
-		if (scrollable <= 0 || getScrollProgress() >= 0.95) {
+		if (scrollable <= 0 || getScrollProgress() >= 0.98) {
 			return;
 		}
 
 		var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		window.scrollTo({
-			top: scrollable,
-			behavior: reduceMotion ? 'auto' : 'smooth',
-		});
-	}
-
-	function returnToStart() {
-		var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		window.scrollTo({
-			top: 0,
-			behavior: reduceMotion ? 'auto' : 'smooth',
-		});
+		animateScrollTo(scrollable, reduceMotion ? 0 : ANIMATION_MS);
 	}
 
 	function isInteractiveTarget(target) {
 		return Boolean(
 			target.closest(
-				'a, button, .tn-close, .tn-hero__link, .tn-contact__link, .tn-contact-extra, .tn-brand'
+				'a, button, .tn-close, .tn-hero__link, .tn-contact-extra, .tn-brand, .tn-contact__logo'
 			)
 		);
 	}
@@ -142,11 +179,17 @@
 			return;
 		}
 
-		if (getFadeProgress(getScrollProgress()) > 0.85) {
+		if (getScrollProgress() > 0.85) {
 			return;
 		}
 
 		goToContact();
+	}
+
+	function returnToStart() {
+		document.body.classList.remove('tn-entered');
+		var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		animateScrollTo(0, reduceMotion ? 0 : ANIMATION_MS);
 	}
 
 	function initVideo() {
@@ -181,6 +224,12 @@
 	window.addEventListener('scroll', onScroll, { passive: true });
 	window.addEventListener('resize', onScroll, { passive: true });
 
+	if ('scrollRestoration' in history) {
+		history.scrollRestoration = 'manual';
+	}
+
 	initVideo();
-	onScroll();
+	window.scrollTo(0, 0);
+	clampScrollPosition();
+	applyCurtain(getScrollProgress());
 })();

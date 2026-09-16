@@ -58,6 +58,14 @@ $secondary_url  = tros_nou_get_secondary_url();
 			<div class="tn-hero__veil" id="tn-hero-veil" aria-hidden="true"></div>
 			<div class="tn-hero__contact" id="tn-hero-contact" aria-hidden="true">
 				<div class="tn-contact-block">
+					<img
+						class="tn-contact__logo"
+						src="<?php echo esc_url( $logo_url ); ?>"
+						alt="<?php esc_attr_e( 'Tros Nou', 'tros-nou' ); ?>"
+						width="120"
+						height="80"
+						decoding="async"
+					>
 					<a class="tn-hero__link" href="<?php echo esc_url( $email_href ); ?>">
 						<?php echo esc_html( $contact_label ); ?>
 					</a>
@@ -68,7 +76,7 @@ $secondary_url  = tros_nou_get_secondary_url();
 							target="_blank"
 							rel="noopener noreferrer"
 							aria-label="<?php esc_attr_e( 'Más información', 'tros-nou' ); ?>"
-						>+</a>
+						><span class="tn-contact-extra__glyph" aria-hidden="true">+</span></a>
 					<?php endif; ?>
 				</div>
 			</div>
@@ -76,25 +84,7 @@ $secondary_url  = tros_nou_get_secondary_url();
 				<span><?php esc_html_e( 'Desplázate para entrar', 'tros-nou' ); ?></span>
 			</p>
 		</div>
-	</section>
-
-	<section class="tn-contact" id="tn-contact" aria-label="<?php esc_attr_e( 'Contacto', 'tros-nou' ); ?>">
-		<div class="tn-contact__inner">
-			<div class="tn-contact-block">
-				<a class="tn-contact__link" href="<?php echo esc_url( $email_href ); ?>">
-					<?php echo esc_html( $contact_label ); ?>
-				</a>
-				<?php if ( $secondary_url ) : ?>
-					<a
-						class="tn-contact-extra"
-						href="<?php echo esc_url( $secondary_url ); ?>"
-						target="_blank"
-						rel="noopener noreferrer"
-						aria-label="<?php esc_attr_e( 'Más información', 'tros-nou' ); ?>"
-					>+</a>
-				<?php endif; ?>
-			</div>
-		</div>
+		<div class="tn-hero__spacer" aria-hidden="true"></div>
 	</section>
 </main>
 
