@@ -169,7 +169,7 @@
 	function isInteractiveTarget(target) {
 		return Boolean(
 			target.closest(
-				'a, button, .tn-close, .tn-hero__link, .tn-contact-extra, .tn-brand, .tn-contact__logo'
+				'a, button, .tn-close, .tn-hero__link, .tn-pau, .tn-brand, .tn-contact__logo'
 			)
 		);
 	}
@@ -210,6 +210,38 @@
 		}
 	}
 
+	function initPauMenu() {
+		var root = document.getElementById('tn-pau');
+		var toggle = document.getElementById('tn-pau-toggle');
+		var menu = document.getElementById('tn-pau-menu');
+
+		if (!root || !toggle || !menu) {
+			return;
+		}
+
+		function setOpen(open) {
+			toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+			menu.hidden = !open;
+		}
+
+		toggle.addEventListener('click', function (event) {
+			event.stopPropagation();
+			setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+		});
+
+		document.addEventListener('click', function (event) {
+			if (!root.contains(event.target)) {
+				setOpen(false);
+			}
+		});
+
+		document.addEventListener('keydown', function (event) {
+			if (event.key === 'Escape') {
+				setOpen(false);
+			}
+		});
+	}
+
 	if (closeBtn) {
 		closeBtn.addEventListener('click', function (event) {
 			event.stopPropagation();
@@ -228,6 +260,7 @@
 		history.scrollRestoration = 'manual';
 	}
 
+	initPauMenu();
 	initVideo();
 	window.scrollTo(0, 0);
 	clampScrollPosition();

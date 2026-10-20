@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TROS_NOU_VERSION', '1.1.14' );
+define( 'TROS_NOU_VERSION', '1.1.15' );
 define( 'TROS_NOU_DIR', get_template_directory() );
 define( 'TROS_NOU_URI', get_template_directory_uri() );
 
@@ -22,11 +22,17 @@ if ( ! defined( 'TROS_NOU_CONTACT_URL' ) ) {
 }
 
 /**
- * Secondary link below email (e.g. portfolio).
- * Override in wp-config.php: define( 'TROS_NOU_SECONDARY_URL', 'https://...' );
+ * «Pau i el cant dels ocells» — Catalan and Castellano.
+ * Override in wp-config.php before WordPress loads:
+ * define( 'TROS_NOU_PAU_URL_CA', 'https://...' );
+ * define( 'TROS_NOU_PAU_URL_ES', 'https://...' );
  */
-if ( ! defined( 'TROS_NOU_SECONDARY_URL' ) ) {
-	define( 'TROS_NOU_SECONDARY_URL', 'https://readymag.website/u1424541209/6545478/' );
+if ( ! defined( 'TROS_NOU_PAU_URL_CA' ) ) {
+	define( 'TROS_NOU_PAU_URL_CA', 'https://readymag.website/u897587687/6597705/' );
+}
+
+if ( ! defined( 'TROS_NOU_PAU_URL_ES' ) ) {
+	define( 'TROS_NOU_PAU_URL_ES', 'https://readymag.website/u1424541209/6545478/' );
 }
 
 require_once TROS_NOU_DIR . '/inc/customizer.php';
@@ -147,16 +153,45 @@ function tros_nou_get_contact_bg_color() {
 }
 
 /**
- * Secondary URL shown as «+» below the email.
+ * Theme mod URL, with a constant fallback.
+ *
+ * @param string $mod      Theme mod key.
+ * @param string $fallback Fallback URL.
  */
-function tros_nou_get_secondary_url() {
-	$custom = get_theme_mod( 'tros_nou_secondary_url', '' );
+function tros_nou_get_theme_mod_url( $mod, $fallback ) {
+	$custom = get_theme_mod( $mod, '' );
 
 	if ( ! empty( $custom ) ) {
 		return esc_url( $custom );
 	}
 
-	return TROS_NOU_SECONDARY_URL;
+	return $fallback;
+}
+
+/**
+ * Catalan page for «Pau i el cant dels ocells».
+ */
+function tros_nou_get_pau_url_ca() {
+	return tros_nou_get_theme_mod_url( 'tros_nou_pau_url_ca', TROS_NOU_PAU_URL_CA );
+}
+
+/**
+ * Castellano page for «Pau i el cant dels ocells».
+ */
+function tros_nou_get_pau_url_es() {
+	$custom = get_theme_mod( 'tros_nou_pau_url_es', '' );
+
+	if ( ! empty( $custom ) ) {
+		return esc_url( $custom );
+	}
+
+	$legacy = get_theme_mod( 'tros_nou_secondary_url', '' );
+
+	if ( ! empty( $legacy ) ) {
+		return esc_url( $legacy );
+	}
+
+	return TROS_NOU_PAU_URL_ES;
 }
 
 /**

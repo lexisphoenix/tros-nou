@@ -19,7 +19,7 @@ function tros_nou_customize_register( $wp_customize ) {
 		'tros_nou_contact',
 		array(
 			'title'       => 'Tros Nou — Contacto',
-			'description' => 'Email, enlace + y color de la pantalla final. No hace falta tocar código.',
+			'description' => 'Email, enlace de Pau i el cant dels ocells y color de la pantalla final. No hace falta tocar código.',
 			'priority'    => 30,
 		)
 	);
@@ -44,7 +44,26 @@ function tros_nou_customize_register( $wp_customize ) {
 	);
 
 	$wp_customize->add_setting(
-		'tros_nou_secondary_url',
+		'tros_nou_pau_url_ca',
+		array(
+			'default'           => 'https://readymag.website/u897587687/6597705/',
+			'sanitize_callback' => 'esc_url_raw',
+			'transport'         => 'refresh',
+		)
+	);
+
+	$wp_customize->add_control(
+		'tros_nou_pau_url_ca',
+		array(
+			'label'       => 'Pau i el cant dels ocells — Catalan',
+			'description' => 'Se abre desde el menú bajo el email, en una pestaña nueva.',
+			'section'     => 'tros_nou_contact',
+			'type'        => 'url',
+		)
+	);
+
+	$wp_customize->add_setting(
+		'tros_nou_pau_url_es',
 		array(
 			'default'           => 'https://readymag.website/u1424541209/6545478/',
 			'sanitize_callback' => 'esc_url_raw',
@@ -53,10 +72,10 @@ function tros_nou_customize_register( $wp_customize ) {
 	);
 
 	$wp_customize->add_control(
-		'tros_nou_secondary_url',
+		'tros_nou_pau_url_es',
 		array(
-			'label'       => 'URL del «+»',
-			'description' => 'Enlace del símbolo + debajo del email. Se abre en una pestaña nueva.',
+			'label'       => 'Pau i el cant dels ocells — Castellano',
+			'description' => 'Se abre desde el menú bajo el email, en una pestaña nueva.',
 			'section'     => 'tros_nou_contact',
 			'type'        => 'url',
 		)

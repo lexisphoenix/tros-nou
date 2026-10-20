@@ -12,7 +12,8 @@ $hero_poster    = tros_nou_get_hero_image_url();
 $logo_url       = TROS_NOU_URI . '/assets/images/logo-tros-nou.png';
 $email_href     = tros_nou_get_email_href();
 $contact_label  = tros_nou_get_contact_label();
-$secondary_url  = tros_nou_get_secondary_url();
+$pau_url_ca     = tros_nou_get_pau_url_ca();
+$pau_url_es     = tros_nou_get_pau_url_es();
 ?>
 
 <a class="tn-brand" href="<?php echo esc_url( home_url( '/' ) ); ?>" aria-label="<?php esc_attr_e( 'Tros Nou', 'tros-nou' ); ?>">
@@ -69,14 +70,34 @@ $secondary_url  = tros_nou_get_secondary_url();
 					<a class="tn-hero__link" href="<?php echo esc_url( $email_href ); ?>">
 						<?php echo esc_html( $contact_label ); ?>
 					</a>
-					<?php if ( $secondary_url ) : ?>
-						<a
-							class="tn-contact-extra"
-							href="<?php echo esc_url( $secondary_url ); ?>"
-							target="_blank"
-							rel="noopener noreferrer"
-							aria-label="<?php esc_attr_e( 'Más información', 'tros-nou' ); ?>"
-						><span class="tn-contact-extra__glyph" aria-hidden="true">+</span></a>
+					<?php if ( $pau_url_ca || $pau_url_es ) : ?>
+						<div class="tn-pau" id="tn-pau">
+							<button
+								type="button"
+								class="tn-pau__toggle"
+								id="tn-pau-toggle"
+								aria-expanded="false"
+								aria-controls="tn-pau-menu"
+							><?php esc_html_e( 'Pau I el cant dels ocells', 'tros-nou' ); ?></button>
+							<div class="tn-pau__menu" id="tn-pau-menu" hidden>
+								<?php if ( $pau_url_ca ) : ?>
+									<a
+										class="tn-pau__link"
+										href="<?php echo esc_url( $pau_url_ca ); ?>"
+										target="_blank"
+										rel="noopener noreferrer"
+									><?php esc_html_e( 'Catalan', 'tros-nou' ); ?></a>
+								<?php endif; ?>
+								<?php if ( $pau_url_es ) : ?>
+									<a
+										class="tn-pau__link"
+										href="<?php echo esc_url( $pau_url_es ); ?>"
+										target="_blank"
+										rel="noopener noreferrer"
+									><?php esc_html_e( 'Castellano', 'tros-nou' ); ?></a>
+								<?php endif; ?>
+							</div>
+						</div>
 					<?php endif; ?>
 				</div>
 			</div>
