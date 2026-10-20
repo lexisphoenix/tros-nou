@@ -55,7 +55,7 @@ function tros_nou_customize_register( $wp_customize ) {
 	$wp_customize->add_control(
 		'tros_nou_pau_url_ca',
 		array(
-			'label'       => 'Pau i el cant dels ocells — Catalan',
+			'label'       => 'Pau i el cant dels ocells — Catalán',
 			'description' => 'Se abre desde el menú bajo el email, en una pestaña nueva.',
 			'section'     => 'tros_nou_contact',
 			'type'        => 'url',

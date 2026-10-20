@@ -3,7 +3,7 @@
 Tema WordPress minimalista de una sola página para la productora audiovisual **Tros Nou**.
 
 - Vídeo hero en bucle (~8 s), fundido al contacto al desplazarse
-- Logo fijo, email mailto y «Pau i el cant dels ocells» (Catalan / Castellano) configurable desde el Personalizador
+- Logo fijo, email mailto y «Pau i el cant dels ocells» (Catalán / Castellano) configurable desde el Personalizador
 - Actualizaciones automáticas desde GitHub (repo público)
 
 ## Instalación (primera vez)
@@ -30,7 +30,7 @@ Activa el tema en **Apariencia → Temas**.
 | Opción | Qué hace |
 |--------|----------|
 | **Email de contacto** | Dirección visible y enlace mailto |
-| **Pau i el cant dels ocells — Catalan** | Enlace que se abre al elegir Catalan |
+| **Pau i el cant dels ocells — Catalán** | Enlace que se abre al elegir Catalán |
 | **Pau i el cant dels ocells — Castellano** | Enlace que se abre al elegir Castellano |
 | **Color de fondo (pantalla de contacto)** | Color del fundido final |
 

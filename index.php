@@ -78,7 +78,7 @@ $pau_url_es     = tros_nou_get_pau_url_es();
 								id="tn-pau-toggle"
 								aria-expanded="false"
 								aria-controls="tn-pau-menu"
-							><?php esc_html_e( 'Pau I el cant dels ocells', 'tros-nou' ); ?></button>
+							><span class="tn-pau__label"><?php esc_html_e( 'Pau I el cant dels ocells', 'tros-nou' ); ?></span><span class="tn-pau__chevron" aria-hidden="true"><svg viewBox="0 0 12 8" width="12" height="8" focusable="false"><path d="M1 1.2 L6 6.2 L11 1.2" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
 							<div class="tn-pau__menu" id="tn-pau-menu" hidden>
 								<?php if ( $pau_url_ca ) : ?>
 									<a
@@ -86,7 +86,7 @@ $pau_url_es     = tros_nou_get_pau_url_es();
 										href="<?php echo esc_url( $pau_url_ca ); ?>"
 										target="_blank"
 										rel="noopener noreferrer"
-									><?php esc_html_e( 'Catalan', 'tros-nou' ); ?></a>
+									><?php esc_html_e( 'Catalán', 'tros-nou' ); ?></a>
 								<?php endif; ?>
 								<?php if ( $pau_url_es ) : ?>
 									<a
