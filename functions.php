@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TROS_NOU_VERSION', '1.1.16' );
+define( 'TROS_NOU_VERSION', '1.1.17' );
 define( 'TROS_NOU_DIR', get_template_directory() );
 define( 'TROS_NOU_URI', get_template_directory_uri() );
 
@@ -224,5 +224,5 @@ function tros_nou_get_hero_image_url() {
 		return esc_url( $custom );
 	}
 
-	return TROS_NOU_URI . '/assets/images/casa-ilustracion-bn-3-oscuro-2.png';
+	return TROS_NOU_URI . '/assets/images/casa-entrada-poster.jpg';
 }

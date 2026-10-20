@@ -16,10 +16,19 @@
 	var video = document.getElementById('tn-hero-video');
 	var brand = document.querySelector('.tn-brand');
 	var heroSticky = hero.querySelector('.tn-hero__sticky');
-	var media = hero.querySelector('.tn-hero__image, .tn-hero__video');
 
 	var scrollAnimating = false;
-	var ticking = false;
+	var scrollable = 0;
+	var displayed = 0;
+	var target = 0;
+	var rafId = 0;
+	var lastStep = 0;
+	var contactShown = false;
+	var closeShown = false;
+	var hintHidden = false;
+	var brandGone = false;
+	var entered = false;
+	var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 	function clamp(value, min, max) {
 		return Math.min(Math.max(value, min), max);
@@ -29,13 +38,12 @@
 		return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 	}
 
-	function getScrollTarget() {
-		return Math.max(hero.offsetHeight - window.innerHeight, 0);
+	function measure() {
+		var stickyH = heroSticky ? heroSticky.offsetHeight : window.innerHeight;
+		scrollable = Math.max(hero.offsetHeight - stickyH, 0);
 	}
 
 	function getScrollProgress() {
-		var scrollable = getScrollTarget();
-
 		if (scrollable <= 0) {
 			return 0;
 		}
@@ -44,83 +52,101 @@
 	}
 
 	function clampScrollPosition() {
-		var max = getScrollTarget();
+		measure();
 		var y = window.scrollY || window.pageYOffset;
 
-		if (y > max) {
-			window.scrollTo(0, max);
+		if (y > scrollable) {
+			window.scrollTo(0, scrollable);
 		}
 	}
 
-	function applyCurtain(progress) {
+	function paint(progress) {
 		if (!veil || !overlayContact) {
 			return;
 		}
 
-		var p = easeInOutCubic(clamp(progress, 0, 1));
-		var curtainTop = (1 - p) * 100;
+		var p = clamp(progress, 0, 1);
 
-		veil.style.clipPath = 'inset(' + curtainTop + '% 0 0 0)';
-		veil.style.webkitMaskImage = 'none';
-		veil.style.maskImage = 'none';
+		document.documentElement.style.setProperty('--tn-p', String(Math.round(p * 1000) / 1000));
 
-		if (media) {
-			media.style.opacity = String(1 - p * 0.35);
+		var showContact = p >= CONTACT_REVEAL;
+
+		if (showContact !== contactShown) {
+			contactShown = showContact;
+			overlayContact.classList.toggle('is-visible', showContact);
+			overlayContact.setAttribute('aria-hidden', showContact ? 'false' : 'true');
 		}
 
-		var contactOpacity = clamp((p - CONTACT_REVEAL) / (1 - CONTACT_REVEAL), 0, 1);
+		var showClose = p > 0.55;
 
-		overlayContact.style.opacity = String(contactOpacity);
+		if (closeBtn && showClose !== closeShown) {
+			closeShown = showClose;
+			closeBtn.classList.toggle('is-visible', showClose);
 
-		if (p >= CONTACT_REVEAL) {
-			overlayContact.classList.add('is-visible');
-			overlayContact.setAttribute('aria-hidden', 'false');
-		} else {
-			overlayContact.classList.remove('is-visible');
-			overlayContact.setAttribute('aria-hidden', 'true');
-		}
-
-		if (closeBtn) {
-			if (p > 0.55) {
-				closeBtn.classList.add('is-visible');
+			if (showClose) {
 				closeBtn.removeAttribute('hidden');
 			} else {
-				closeBtn.classList.remove('is-visible');
 				closeBtn.setAttribute('hidden', '');
 			}
 		}
 
-		if (hint) {
-			if (progress > 0.02) {
-				hint.classList.add('is-hidden');
-			} else {
-				hint.classList.remove('is-hidden');
-			}
+		var hideHint = progress > 0.02;
+
+		if (hint && hideHint !== hintHidden) {
+			hintHidden = hideHint;
+			hint.classList.toggle('is-hidden', hideHint);
 		}
 
-		if (brand) {
-			brand.style.opacity = String(1 - clamp(p / 0.45, 0, 1));
-			brand.style.pointerEvents = p > 0.35 ? 'none' : 'auto';
+		var dimBrand = p > 0.35;
+
+		if (brand && dimBrand !== brandGone) {
+			brandGone = dimBrand;
+			brand.style.pointerEvents = dimBrand ? 'none' : 'auto';
 		}
 
-		if (p >= 0.98) {
-			document.body.classList.add('tn-entered');
-		} else {
-			document.body.classList.remove('tn-entered');
+		var isEntered = p >= 0.98;
+
+		if (isEntered !== entered) {
+			entered = isEntered;
+			document.body.classList.toggle('tn-entered', isEntered);
 		}
 	}
 
-	function onScroll() {
-		if (!ticking) {
-			window.requestAnimationFrame(function () {
-				if (!scrollAnimating) {
-					clampScrollPosition();
-					applyCurtain(getScrollProgress());
-				}
-				ticking = false;
-			});
-			ticking = true;
+	function schedule() {
+		if (rafId || scrollAnimating) {
+			return;
 		}
+
+		rafId = window.requestAnimationFrame(step);
+	}
+
+	function step(now) {
+		rafId = 0;
+
+		if (scrollAnimating) {
+			lastStep = 0;
+			return;
+		}
+
+		var delta = target - displayed;
+
+		if (reduceMotion || Math.abs(delta) < 0.001) {
+			displayed = target;
+			lastStep = 0;
+			paint(displayed);
+			return;
+		}
+
+		var dt = lastStep ? Math.min(now - lastStep, 48) : 16;
+		lastStep = now;
+		displayed += delta * (1 - Math.exp(-dt / 55));
+		paint(displayed);
+		schedule();
+	}
+
+	function onScroll() {
+		target = getScrollProgress();
+		schedule();
 	}
 
 	function animateScrollTo(targetY, duration) {
@@ -141,14 +167,18 @@
 			var y = startY + distance * eased;
 
 			window.scrollTo(0, y);
-			applyCurtain(getScrollProgress());
+			target = getScrollProgress();
+			displayed = target;
+			paint(displayed);
 
 			if (t < 1) {
 				window.requestAnimationFrame(frame);
 			} else {
 				scrollAnimating = false;
 				clampScrollPosition();
-				applyCurtain(getScrollProgress());
+				target = getScrollProgress();
+				displayed = target;
+				paint(displayed);
 			}
 		}
 
@@ -156,14 +186,14 @@
 	}
 
 	function goToContact() {
-		var scrollable = getScrollTarget();
+		measure();
+		var scrollableDistance = scrollable;
 
-		if (scrollable <= 0 || getScrollProgress() >= 0.98) {
+		if (scrollableDistance <= 0 || getScrollProgress() >= 0.98) {
 			return;
 		}
 
-		var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		animateScrollTo(scrollable, reduceMotion ? 0 : ANIMATION_MS);
+		animateScrollTo(scrollableDistance, reduceMotion ? 0 : ANIMATION_MS);
 	}
 
 	function isInteractiveTarget(target) {
@@ -188,7 +218,7 @@
 
 	function returnToStart() {
 		document.body.classList.remove('tn-entered');
-		var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		entered = false;
 		animateScrollTo(0, reduceMotion ? 0 : ANIMATION_MS);
 	}
 
@@ -197,16 +227,38 @@
 			return;
 		}
 
+		var src = video.getAttribute('data-src');
+
+		if (!src) {
+			return;
+		}
+
 		video.muted = true;
 		video.loop = true;
+		video.playsInline = true;
 		video.setAttribute('playsinline', '');
 		video.setAttribute('webkit-playsinline', '');
 
-		var playPromise = video.play();
-		if (playPromise && typeof playPromise.catch === 'function') {
-			playPromise.catch(function () {
-				/* Autoplay blocked — scroll and poster still work. */
-			});
+		function start() {
+			if (video.getAttribute('src')) {
+				return;
+			}
+
+			video.preload = 'auto';
+			video.src = src;
+
+			var playPromise = video.play();
+			if (playPromise && typeof playPromise.catch === 'function') {
+				playPromise.catch(function () {
+					/* Autoplay blocked — the still image stays visible. */
+				});
+			}
+		}
+
+		if ('requestIdleCallback' in window) {
+			window.requestIdleCallback(start, { timeout: 800 });
+		} else {
+			window.setTimeout(start, 400);
 		}
 	}
 
@@ -254,7 +306,10 @@
 	}
 
 	window.addEventListener('scroll', onScroll, { passive: true });
-	window.addEventListener('resize', onScroll, { passive: true });
+	window.addEventListener('resize', function () {
+		measure();
+		onScroll();
+	}, { passive: true });
 
 	if ('scrollRestoration' in history) {
 		history.scrollRestoration = 'manual';
@@ -262,7 +317,9 @@
 
 	initPauMenu();
 	initVideo();
+	measure();
 	window.scrollTo(0, 0);
-	clampScrollPosition();
-	applyCurtain(getScrollProgress());
+	target = 0;
+	displayed = 0;
+	paint(0);
 })();

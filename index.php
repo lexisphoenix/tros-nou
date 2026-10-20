@@ -33,27 +33,25 @@ $pau_url_es     = tros_nou_get_pau_url_es();
 	<section class="tn-hero" id="tn-hero" aria-label="<?php esc_attr_e( 'Entrada', 'tros-nou' ); ?>">
 		<div class="tn-hero__sticky">
 			<div class="tn-hero__media" aria-hidden="true">
+				<img
+					class="tn-hero__image"
+					src="<?php echo esc_url( $hero_poster ); ?>"
+					alt=""
+					width="1280"
+					height="956"
+					decoding="async"
+					fetchpriority="high"
+				>
 				<?php if ( $hero_video ) : ?>
 					<video
 						class="tn-hero__video"
 						id="tn-hero-video"
-						src="<?php echo esc_url( $hero_video ); ?>"
-						poster="<?php echo esc_url( $hero_poster ); ?>"
+						data-src="<?php echo esc_url( $hero_video ); ?>"
 						muted
 						playsinline
 						loop
-						autoplay
-						preload="auto"
+						preload="none"
 					></video>
-				<?php else : ?>
-					<img
-						class="tn-hero__image"
-						src="<?php echo esc_url( $hero_poster ); ?>"
-						alt=""
-						width="1920"
-						height="1080"
-						decoding="async"
-					>
 				<?php endif; ?>
 			</div>
 			<div class="tn-hero__veil" id="tn-hero-veil" aria-hidden="true"></div>
@@ -78,7 +76,7 @@ $pau_url_es     = tros_nou_get_pau_url_es();
 								id="tn-pau-toggle"
 								aria-expanded="false"
 								aria-controls="tn-pau-menu"
-							><span class="tn-pau__label"><?php esc_html_e( 'Pau I el cant dels ocells', 'tros-nou' ); ?></span><span class="tn-pau__chevron" aria-hidden="true"><svg viewBox="0 0 12 8" width="12" height="8" focusable="false"><path d="M1 1.2 L6 6.2 L11 1.2" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+							><span class="tn-pau__label"><?php esc_html_e( 'Pau i el cant dels ocells', 'tros-nou' ); ?></span><span class="tn-pau__chevron" aria-hidden="true"><svg viewBox="0 0 12 8" width="12" height="8" focusable="false"><path d="M1 1.2 L6 6.2 L11 1.2" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
 							<div class="tn-pau__menu" id="tn-pau-menu" hidden>
 								<?php if ( $pau_url_ca ) : ?>
 									<a
